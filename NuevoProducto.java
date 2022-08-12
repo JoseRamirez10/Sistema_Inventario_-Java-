@@ -5,7 +5,7 @@ import java.awt.event.*;
 
 class NuevoProducto extends JFrame{
 
-    MySql_Java consultas = new MySql_Java();
+    SelectMySql consultas = new SelectMySql();
     String[] categorias = consultas.getCategorias();
 
     public NuevoProducto(){
@@ -88,7 +88,7 @@ class NuevoProducto extends JFrame{
                             String pass = new String(ventana.contraseña.getPassword());
                             try {
                                 if(consultas.ComprobacionLoggin(pass)){
-                                    ManejoDatos_MySql insercion = new ManejoDatos_MySql();
+                                    Ins_Upd_Del_MySql insercion = new Ins_Upd_Del_MySql();
                                     String nombre = nombre_edit.getText();
                                     Integer precio = Integer.parseInt(precio_edit.getText());
                                     Integer cantidad = Integer.parseInt(cantidad_edit.getText());

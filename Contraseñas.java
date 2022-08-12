@@ -1,18 +1,14 @@
 import Consultas.*;
 
 import javax.swing.*;
-import javax.swing.event.MouseInputAdapter;
 import javax.swing.table.DefaultTableModel;
 
 import java.awt.*;
 import java.awt.event.*;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-
 class Contraseñas extends JFrame{
 
-    MySql_Java consultas = new MySql_Java();
+    SelectMySql consultas = new SelectMySql();
     JButton nueva;
 
     public Contraseñas(){
@@ -41,7 +37,7 @@ class Contraseñas extends JFrame{
         panel.add(nueva);
         add(panel);
 
-        ManejoDatos_MySql manejo = new ManejoDatos_MySql();
+        Ins_Upd_Del_MySql manejo = new Ins_Upd_Del_MySql();
 
         tabla.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e){

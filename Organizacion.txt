@@ -1,0 +1,20 @@
+* Consultas:
+    - Inserción, actualización y eliminación. (Ins_Upd_Del_MySql)
+    - Obtención de datos. (SelectMySql)
+
+* Main:
+    - Inicio del programa.
+
+* Interfaz:
+    - Interfaz de inicio para el perfil de vendedor y cliente.
+
+PanelProductos
+    - Crea una interfaz que contiene un panel donde se colocan los elementos del vendedor y el cliente.
+
+Panel donde se colocan los elementos del vendedor y cliente:
+    - 
+    - Vendedor:
+        - 
+
+    - Cliente:
+        -

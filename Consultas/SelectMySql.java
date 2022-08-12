@@ -2,22 +2,23 @@ package Consultas;
 
 import java.sql.*;
 
-public class MySql_Java {
+public class SelectMySql{
     
-    public boolean ComprobacionLoggin(String contraseña) throws SQLException, ClassNotFoundException{
-        
-        Class.forName("com.mysql.cj.jdbc.Driver");
-        Connection conexion = DriverManager.getConnection("jdbc:mysql://localhost/INVENTARIO","root", "");
-        
-        Statement s = conexion.createStatement();
-        ResultSet rs = s.executeQuery("select * from USUARIO_CONTRASEÑA");
-        while(rs.next()){
-            if(contraseña.equals(rs.getString(1))){
-                conexion.close();
-                return true;
+    public boolean ComprobacionLoggin(String contraseña){
+        try{
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection conexion = DriverManager.getConnection("jdbc:mysql://localhost/INVENTARIO","root", "");
+            
+            Statement s = conexion.createStatement();
+            ResultSet rs = s.executeQuery("select * from USUARIO_CONTRASEÑA");
+            while(rs.next()){
+                if(contraseña.equals(rs.getString(1))){
+                    conexion.close();
+                    return true;
+                }
             }
-        }
-        conexion.close();
+            conexion.close();
+        }catch(SQLException | ClassNotFoundException e1){}
         return false;
     }
 
@@ -174,12 +175,17 @@ public class MySql_Java {
             Connection conexion = DriverManager.getConnection("jdbc:mysql://localhost/INVENTARIO","root", "");
             
             Statement s = conexion.createStatement();
-            ResultSet size = s.executeQuery("select count(*) from categoria");
-            int tamaño = 0;
-            while(size.next()){
-                tamaño = size.getInt(1);
+            ResultSet consulta_id_categoria = s.executeQuery("select id_categoria from categoria where categoria = '"+categoria+"'");
+            int id_categoria = 0;
+            while(consulta_id_categoria.next()){
+                id_categoria = consulta_id_categoria.getInt(1);
             }
-            Object[][] datos = new Object[tamaño][5];
+            ResultSet consulta_count = s.executeQuery("select count(*) from categoria_producto where id_categoria = '"+id_categoria+"'");
+            int consult = 0;
+            while(consulta_count.next()){
+                consult = consulta_count.getInt(1);
+            }
+            Object[][] datos = new Object[consult][5];
             ResultSet rs = s.executeQuery("select producto.id_producto, producto.nombre, producto.precio, producto.cantidad, categoria.categoria from producto inner join categoria_producto on producto.id_producto = categoria_producto.id_producto inner join categoria on categoria.id_categoria = categoria_producto.id_categoria where categoria.categoria = '"+categoria+"';");
             int contador = 0;
             while(rs.next()){

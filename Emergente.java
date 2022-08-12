@@ -1,10 +1,10 @@
-import Consultas.MySql_Java;
+import Consultas.*;
 
 import javax.swing.*;
 
 class Emergente{
 
-    MySql_Java consultas = new MySql_Java();
+    SelectMySql consultas = new SelectMySql();
     JFrame emergente;
     
     JPasswordField contraseña;

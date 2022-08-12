@@ -2,7 +2,7 @@ package Consultas;
 
 import java.sql.*;
 
-public class ManejoDatos_MySql {
+public class Ins_Upd_Del_MySql {
 
     public void actualizarProducto(int id, String nombre, int precio, int cantidad, String categoria){
         try{

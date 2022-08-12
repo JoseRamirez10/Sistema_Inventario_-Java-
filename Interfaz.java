@@ -1,9 +1,8 @@
-import Consultas.MySql_Java;
+import Consultas.SelectMySql;
 
 import javax.swing.*;
 import javax.swing.event.*;
 import java.awt.event.*;
-import java.sql.SQLException;
 
 class Interfaz extends JFrame{
 
@@ -24,8 +23,6 @@ class Interfaz extends JFrame{
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         
-
-        //pantallaCarga();
         login();
 
         setVisible(true);
@@ -96,37 +93,39 @@ class Interfaz extends JFrame{
     public void verificarContraseña(){
         if(productor.isSelected()){
             String pass = new String(contraseña.getPassword());
-            MySql_Java comprobandoLoggeo = new MySql_Java();
-            try {
-                if(pass.length() == 0){
-                    mensaje.setText("Ingrese una contraseña...");
-                }else{
-                    if(comprobandoLoggeo.ComprobacionLoggin(pass)){
-                        remove(log);
-                        Productor perfil_productor = new Productor();
-                        setTitle("Productor");
-                        setSize(800,600);
-                        setLocationRelativeTo(null);
-                        add(perfil_productor);
-                        
-                        perfil_productor.cerrarSesion.addActionListener(new ActionListener(){
-                            @Override
-                            public void actionPerformed(ActionEvent e){
-                                //setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-                                remove(perfil_productor);
-                                initComponentes();
-                            }
-                        });
-                    }
-                    else{
-                        mensaje.setText("Contraseña incorrecta...");
-                    }
+            SelectMySql comprobandoLoggeo = new SelectMySql();
+            if(pass.length() == 0){
+                mensaje.setText("Ingrese una contraseña...");
+            }else{
+                if(comprobandoLoggeo.ComprobacionLoggin(pass)){
+                    crearPanelPerfil("Vendedor");
                 }
-            } catch (ClassNotFoundException | SQLException e1) {}
+                else{
+                    mensaje.setText("Contraseña incorrecta...");
+                }
+            }
         }else{
-            System.out.println("Entro como cliente");
+            crearPanelPerfil("Cliente");
         }
-    } 
+    }
+    
+    public void crearPanelPerfil(String perfil){
+        remove(log);
+        PanelProductos perfil_productor = new PanelProductos();
+        setTitle(perfil);
+        setSize(800,600);
+        setLocationRelativeTo(null);
+        add(perfil_productor);
+
+        perfil_productor.cerrarSesion.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e){
+                //setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+                remove(perfil_productor);
+                initComponentes();
+            }
+        });
+    }
     
     public class KeyListenerLoggin implements KeyListener{
             @Override

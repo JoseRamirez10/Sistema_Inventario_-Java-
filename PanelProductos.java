@@ -1,13 +1,12 @@
-import Consultas.MySql_Java;
-import Consultas.ManejoDatos_MySql;
+import Consultas.*;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
 
-class Productor extends JPanel{
-
+class PanelProductos extends JPanel{
+    
     JPanel productos;
     JPanel perfil;
 
@@ -18,19 +17,11 @@ class Productor extends JPanel{
 
     JLabel mensaje_informacion;
 
+    ModelTable modelo;
     JTable tabla;
-    String[] columnas = {"ID", "Nombre", "Precio", "Cantidad","Categoria"};
-
-    MySql_Java consultas = new MySql_Java();
-    Object[][] datos = consultas.getProductos();
-    DefaultTableModel dtm = new DefaultTableModel(datos, columnas){
-        public boolean isCellEditable(int rowIndex,int columnIndex){
-            return false;
-        }
-    };
+    SelectMySql consultas = new SelectMySql();
     String[] categorias = consultas.getCategorias();
-
-    ManejoDatos_MySql manejo = new ManejoDatos_MySql();
+    Ins_Upd_Del_MySql manejo = new Ins_Upd_Del_MySql();
 
     JTextField id_edit;
     JTextField nombre_edit;
@@ -47,13 +38,7 @@ class Productor extends JPanel{
 
     JButton cerrarSesion;
 
-    public Productor(){
-
-        String[] agotados = consultas.consulta_cantidad();
-        for(int i = 0; i<agotados.length; i++){
-            Notificacion notificacion = new Notificacion(agotados[i]);
-        }
-
+    public PanelProductos(){
         setBounds(0,0,800,600);
         setLayout(null);
 
@@ -97,7 +82,7 @@ class Productor extends JPanel{
         pestañas.setBounds(0,0,800,570);
         pestañas.addTab("Productos", productos);
         pestañas.addTab("Perfil", perfil);
-        
+
         add(pestañas);
     }
 
@@ -187,98 +172,48 @@ class Productor extends JPanel{
 
                 if(filtro_busqueda.getSelectedItem() == "-- Seleccione busqueda --"){
                     if(item_busqueda.getSelectedItem() == "-- Ordenar --"){
-                        tabla.setModel(dtm);
+                        tabla.setModel(modelo.generarModelo(""));
                         mensaje_informacion.setText("Visualización de todos los productos.");
                     }else if(item_busqueda.getSelectedItem() == "Categorias ASC"){
-                        Object[][] nuevoModelo = consultas.getProductos_CategoriasASC();
                         mensaje_informacion.setText("Orden ascendente de categorias...");
-                        DefaultTableModel modelo_catASC = new DefaultTableModel(nuevoModelo, columnas){
-                            public boolean isCellEditable(int rowIndex,int columnIndex){
-                                return false;
-                            }
-                        };
-                        tabla.setModel(modelo_catASC);
+                        tabla.setModel(modelo.generarModelo("CatASC"));
                     }else{
-                        Object[][] nuevoModelo = consultas.getProductos_CategoriasDESC();
                         mensaje_informacion.setText("Orden descendente de categorias...");
-                        DefaultTableModel modelo_catDesc = new DefaultTableModel(nuevoModelo, columnas){
-                            public boolean isCellEditable(int rowIndex,int columnIndex){
-                                return false;
-                            }
-                        };
-                        tabla.setModel(modelo_catDesc);
+                        tabla.setModel(modelo.generarModelo("CatDESC"));
                     }
                     
                 }else if(filtro_busqueda.getSelectedItem() == "ID"){
                     Integer id = Integer.parseInt(String.valueOf(item_busqueda.getSelectedItem()));
                     mensaje_informacion.setText("Filtro: ID = "+id+".");
-                    Object[][] nuevoModelo = consultas.consultaID(id);
-                    DefaultTableModel modelo_ids = new DefaultTableModel(nuevoModelo, columnas){
-                        public boolean isCellEditable(int rowIndex,int columnIndex){
-                            return false;
-                        }
-                    };
-                    tabla.setModel(modelo_ids);
+                    tabla.setModel(modelo.generarModelo("ID", id));
                 }else if(filtro_busqueda.getSelectedItem() == "Nombre"){
                     String nombre = String.valueOf(item_busqueda.getSelectedItem());
                     mensaje_informacion.setText("Filtro: Nombre = "+nombre+".");
-                    Object[][] nuevoModelo = consultas.consultaNombre(nombre);
-                    DefaultTableModel modelo_nombres = new DefaultTableModel(nuevoModelo, columnas){
-                        public boolean isCellEditable(int rowIndex,int columnIndex){
-                            return false;
-                        }
-                    };
-                    tabla.setModel(modelo_nombres);
+                    tabla.setModel(modelo.generarModelo("Nombre", nombre));
                 }else if(filtro_busqueda.getSelectedItem() == "Categoria"){
                     String categoria = String.valueOf(item_busqueda.getSelectedItem());
                     mensaje_informacion.setText("Filtro: Categoria = "+categoria+".");
-                    Object[][] nuevoModelo = consultas.consultaCategoria(categoria);
-                    DefaultTableModel modelo_categoria = new DefaultTableModel(nuevoModelo, columnas){
-                        public boolean isCellEditable(int rowIndex,int columnIndex){
-                            return false;
-                        }
-                    };
-                    tabla.setModel(modelo_categoria);
+                    tabla.setModel(modelo.generarModelo("Categoria", categoria));
                 }else{
                     if(item_busqueda.getSelectedItem() == "-- Ordenar --"){
                         mensaje_informacion.setText("Filtro: Productos agotados.");
-                        Object[][] nuevoModelo = consultas.productosAgotados("ID");
-                        DefaultTableModel modelo_categoria = new DefaultTableModel(nuevoModelo, columnas){
-                            public boolean isCellEditable(int rowIndex,int columnIndex){
-                                return false;
-                            }
-                        };
-                        tabla.setModel(modelo_categoria);
+                        tabla.setModel(modelo.generarModelo("Agotados_ID"));
                     }else if(item_busqueda.getSelectedItem() == "Categorias ASC"){
                         mensaje_informacion.setText("Filtro: Productos agotados ordenados por categorias ASC.");
-                        Object[][] nuevoModelo = consultas.productosAgotados("ASC");
-                        DefaultTableModel modelo_categoria = new DefaultTableModel(nuevoModelo, columnas){
-                            public boolean isCellEditable(int rowIndex,int columnIndex){
-                                return false;
-                            }
-                        };
-                        tabla.setModel(modelo_categoria);
+                        tabla.setModel(modelo.generarModelo("Agotados_ASC"));
                     }else{
                         mensaje_informacion.setText("Filtro: Productos agotados ordenador por categorias DESC");
-                        Object[][] nuevoModelo = consultas.productosAgotados("");
-                        DefaultTableModel modelo_categoria = new DefaultTableModel(nuevoModelo, columnas){
-                            public boolean isCellEditable(int rowIndex,int columnIndex){
-                                return false;
-                            }
-                        };
-                        tabla.setModel(modelo_categoria);
+                        tabla.setModel(modelo.generarModelo("Agotados_DESC"));
                     }
                 }
-               
             }
         });
 
     }
 
     public void panelInventario(){
-        tabla = new JTable(dtm);
-        tabla.setPreferredScrollableViewportSize(new Dimension(480, 390));
-        //tabla.setEnabled(false);
+        modelo = new ModelTable();
+        tabla = modelo.generarTabla();
 
         JScrollPane scrollPane = new JScrollPane(tabla);
 
@@ -292,13 +227,7 @@ class Productor extends JPanel{
         actualizar.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e){
-                datos = consultas.getProductos();
-                dtm = new DefaultTableModel(datos, columnas){
-                    public boolean isCellEditable(int rowIndex,int columnIndex){
-                        return false;
-                    }
-                };
-                tabla.setModel(dtm);
+                tabla.setModel(modelo.generarModelo(""));
 
                 filtro_busqueda.setSelectedIndex(0);
                 item_busqueda.setSelectedIndex(0);
@@ -481,13 +410,7 @@ class Productor extends JPanel{
                         try {
                             if(consultas.ComprobacionLoggin(pass)){
                                 manejo.actualizarProducto(id, nombre, precio, cantidad, categoria);
-                                datos = consultas.getProductos();
-                                dtm = new DefaultTableModel(datos, columnas){
-                                    public boolean isCellEditable(int rowIndex,int columnIndex){
-                                        return false;
-                                    }
-                                };
-                                tabla.setModel(dtm);
+                                tabla.setModel(modelo.generarModelo(""));
                                 ventana.emergente.dispose();
                                 mensaje_informacion.setText(nombre+" editado correctamente.");
                             }
@@ -505,9 +428,6 @@ class Productor extends JPanel{
                         mensaje_informacion.setText("Edicion cancelada...");
                     }
                 }); 
-
-                
-                
             }
         });
 
@@ -525,13 +445,7 @@ class Productor extends JPanel{
                             if(consultas.ComprobacionLoggin(pass)){
                                 Integer id = Integer.parseInt(id_edit.getText());
                                 manejo.eliminarProducto(id);
-                                datos = consultas.getProductos();
-                                dtm = new DefaultTableModel(datos, columnas){
-                                    public boolean isCellEditable(int rowIndex,int columnIndex){
-                                        return false;
-                                    }
-                                };
-                                tabla.setModel(dtm);
+                                tabla.setModel(modelo.generarModelo(""));
                                 mensaje_informacion.setText(nombre_edit.getText()+" eliminado correctamente.");
                                 ventana.emergente.dispose();
 
