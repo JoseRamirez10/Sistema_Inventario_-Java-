@@ -39,6 +39,12 @@ class PanelProductos extends JPanel{
     JButton cerrarSesion;
 
     public PanelProductos(){
+
+        String[] agotados = consultas.consulta_cantidad();
+        for(int i = 0; i<agotados.length; i++){
+            Notificacion notificacion = new Notificacion(agotados[i]);
+        }
+
         setBounds(0,0,800,600);
         setLayout(null);
 
